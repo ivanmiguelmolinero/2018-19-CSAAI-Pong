@@ -9,15 +9,6 @@ function main () {
 
   var ctx = canvas.getContext("2d");
 
-  window.onkeydown = (e) => {
-    e.preventDefault();
-
-    console.log(e.key);
-    if (e.key == 'a') {
-      console.log("Tecla A apretada");
-      console
-    }
-  }
 /*
   ctx.fillStyle = 'white';
   ctx.fillRect(60,60, 10, 40);
@@ -53,9 +44,12 @@ function main () {
     width: 5,
     height: 5,
 
+    direccion: "derecha",
+
     reset : function () {
       this.x = this.x_ini;
       this.y = this.y_ini;
+      this.direccion = "derecha";
     },
 
     init : function(ctx) {
@@ -85,28 +79,67 @@ function main () {
 
   var sacar = document.getElementById("sacar");
 
-  sacar.onclick = () => {
-    // Lanzar el timer (si es que no estaba ya lanzado)
-    if (!timer) {
-      timer = setInterval(() =>{
-        console.log("tic");
-        // Actualizar la bola
-         bola.update()
+  window.onkeydown = (e) => {
+    e.preventDefault();
 
-        // Borrar el canvas
-        ctx.clearRect(0,0,canvas.width, canvas.height);
+    if (e.key == 'Enter'){
+      // Lanzar el timer (si es que no estaba ya lanzado)
+      if (!timer) {
+        timer = setInterval(() =>{
+          console.log("tic");
+          // Actualizar la bola
+           bola.update()
 
-        //Dibujar la bola
-        bola.draw()
+          // Borrar el canvas
+          ctx.clearRect(0,0,canvas.width, canvas.height);
 
-        // Condicion de terminacion
-        if (bola.x > canvas.width) {
-          clearInterval(timer)
-          timer = null;
-          bola.reset();
-          bola.draw();
-        }
-      }, 20)
+          //Dibujar la bola
+          bola.draw()
+
+          // Condicion de terminacion
+          if (bola.x > canvas.width) {
+            bola.vx = -15;
+            bola.direccion = "izquierda";
+          } else if (bola.y < 0 && bola.x < 0) {
+            bola.vx = 15;
+            bola.vy= 30;
+            bola.direccion = "derecha";
+          } else if (bola.x > canvas.width && bola.y > canvas.height) {
+            bola.vx = -30;
+            bola.vy = -15;
+            bola.direccion = "izquierda";
+          } else if (bola.vx < 0 && bola.vy > canvas.height) {
+            bola.vx = 30;
+            bola.vy = -15;
+            bola.direccion = "derecha";
+          } else if (bola.x > canvas.width && bola.y < 0) {
+            bola.vx = -15;
+            bola.vy = 30;
+            bola.direccion = "izquierda";
+          } else if (bola.y > canvas.height) {
+            // Controlo la direccion de rebote de la bola
+            if (bola.direccion == "izquierda") {
+              bola.vx = -15;
+              bola.vy = -15;
+            } else {
+              bola.vx = 15;
+              bola.vy = -15;
+            }
+          } else if (bola.y < 0) {
+            // Controlo la direccion de rebote de la bola
+            if (bola.direccion == "izquierda") {
+              bola.vx = -15;
+              bola.vy = 15;
+            } else {
+              bola.vx = 15;
+              bola.vy = 15;
+            }
+          } else if (bola.x < 0) {
+            bola.vx = 15;
+            bola.direccion = "derecha";
+          }
+        }, 20)
+      }
     }
   }
 
