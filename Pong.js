@@ -45,8 +45,8 @@ function main () {
     x : 0,
     y: 0,
 
-    vx : 40,
-    vy : 40,
+    vx : 15,
+    vy : 15,
 
     ctx : null,
 
