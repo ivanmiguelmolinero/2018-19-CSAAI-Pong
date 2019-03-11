@@ -94,9 +94,14 @@ function main () {
 
     direccion: null,
 
-    init : function(ctx) {
+    reset: function () {
       this.x = this.x_ini;
       this.y = this.y_ini;
+      this.direccion = null;
+    },
+
+    init : function(ctx) {
+      this.reset();
       this.ctx = ctx;
 
     },
@@ -129,7 +134,6 @@ function main () {
   raqueta.draw();
 
   var timer = null;
-
   window.onkeydown = (e) => {
     e.preventDefault();
 
@@ -177,7 +181,7 @@ function main () {
             bola.vx = -15;
             bola.vy = -7;
             bola.direccion = "izquierda";
-          } else if (bola.vx < 0 && bola.vy > canvas.height) {
+          } else if (bola.x < 0 && bola.y > canvas.height) {
             bola.vx = 15;
             bola.vy = -7;
             bola.direccion = "derecha";
@@ -217,5 +221,6 @@ function main () {
       }
     }
   }
+
 
 }
