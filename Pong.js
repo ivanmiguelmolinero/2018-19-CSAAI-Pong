@@ -28,10 +28,7 @@ function main () {
   ctx.font = "50px Comic Sans"
   ctx.fillText("0",3*canvas.width/4, 40)
 */
-
-  var i;
-
-  var choque_bola_raqueta = false;
+  var hitjugador1 = false;
 
   var bola = {
 
@@ -77,7 +74,7 @@ function main () {
   bola.init(ctx);
   bola.draw();
 
-  var raqueta = {
+  /*var raqueta = {
 
     x_ini: 40,
     y_ini: 40,
@@ -87,7 +84,7 @@ function main () {
 
     ctx: null,
 
-    vy: 30,
+    vy: 7,
 
     width: 10,
     height: 60,
@@ -128,10 +125,67 @@ function main () {
      }
    }
 
+ }*/
+
+  function raqueta (x,y) {
+
+    this.x_ini= x;
+    this.y_ini= y;
+
+    this.x= 0;
+    this.y= 0;
+
+    this.ctx= null;
+
+    this.vy= 10;
+
+    this.width= 10;
+    this.height= 60;
+
+    this.direccion= null;
+
+    this.reset= function () {
+      this.x = this.x_ini;
+      this.y = this.y_ini;
+      this.direccion = null;
+    }
+
+    this.init = function(ctx) {
+      this.reset();
+      this.ctx = ctx;
+
+    }
+
+    this.draw= function() {
+      this.ctx.fillStyle = 'white';
+      this.ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+
+    this.update= function() {
+      if (this.direccion == "arriba") {
+        this.y = this.y - this.vy;
+      } else if (this.direccion == "abajo") {
+        this.y = this.y + this.vy;
+      }
+    }
   }
 
-  raqueta.init(ctx);
-  raqueta.draw();
+  function hit(x,y,a,b) {
+    for (var i = b; i < b + jugador1.height; i++) {
+        if (x == a + jugador1.width && (y == i || y+1 == i || y+2 == i || y+3 == i || y+4 == i || y+5 == i)){
+          hitjugador1 = true;
+          console.log(hitjugador1);
+        }
+    }
+  }
+
+  var jugador1 = new raqueta(40,40);
+  var jugador2 = new raqueta(canvas.width-40,40);
+
+  jugador1.init(ctx);
+  jugador1.draw();
+  jugador2.init(ctx);
+  jugador2.draw();
 
   var timer = null;
   window.onkeydown = (e) => {
@@ -147,16 +201,20 @@ function main () {
          // Movimiento de una raqueta
          window.onkeydown = (e) => {
            e.preventDefault();
-
-           if (e.key == 'ArrowUp' && raqueta.y > raqueta.y_ini) {
-             raqueta.direccion = "arriba";
-             raqueta.update()
-           } else if (e.key == "ArrowDown" && raqueta.y + raqueta.height < canvas.height ) {
-             raqueta.direccion = "abajo";
-             raqueta.update();
+           if (e.key == 'w' && jugador1.y > jugador1.y_ini) {
+             jugador1.direccion = "arriba";
+           } else if (e.key == "s" && jugador1.y + jugador1.height < canvas.height ) {
+             jugador1.direccion = "abajo";
            }
         }
+        window.onkeyup = (e) => {
+          if (e.key == 'w' || e.key == 's') {
+            jugador1.direccion = "ninguna";
+          }
+        }
 
+          jugador1.update();
+          jugador2.update();
           // Borrar el canvas
           ctx.clearRect(0,0,canvas.width, canvas.height);
 
@@ -164,10 +222,11 @@ function main () {
           bola.draw()
 
           //Dibujar la raqueta
-          raqueta.draw();
+          jugador1.draw();
+          jugador2.draw();
 
           //Comprobacion de si la bola choca con la raqueta
-          raqueta.hit(bola.x,bola.y)
+          hit(bola.x,bola.y,jugador1.x,jugador1.y)
 
           // Choque y rebote de la bola
           if (bola.x > canvas.width) {
@@ -210,11 +269,12 @@ function main () {
           } else if (bola.x < 0) {
             bola.vx = 7;
             bola.direccion = "derecha";
-          } else if (choque_bola_raqueta) {
+          } else if (hitjugador1) {
             bola.vx = 7;
             bola.direccion = "derecha";
             // Vuelvo a poner el choque en false para poder comprobarlo en cada interaccion
-            choque_bola_raqueta = false;
+            hitjugador1 = false;
+            console.log(hitjugador1)
           }
 
         }, 15)

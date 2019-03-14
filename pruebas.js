@@ -6,53 +6,61 @@ function main() {
 
   var ctx = canvas.getContext("2d");
 
-  var raqueta = {
+  function raqueta (x,y) {
 
-    x_ini: 40,
-    y_ini: 40,
+    this.x_ini= x;
+    this.y_ini= y;
 
-    x: 0,
-    y: 0,
+    this.x= 0;
+    this.y= 0;
 
-    ctx: null,
+    this.ctx= null;
 
-    vy: 15,
+    this.vy= 10;
 
-    width: 10,
-    height: 60,
+    this.width= 10;
+    this.height= 60;
 
-    direccion: null,
+    this.direccion= null;
 
-    reset: function () {
+    this.reset= function () {
       this.x = this.x_ini;
       this.y = this.y_ini;
       this.direccion = null;
-    },
+    }
 
-    init : function(ctx) {
+    this.init = function(ctx) {
       this.reset();
       this.ctx = ctx;
 
-    },
+    }
 
-    draw: function() {
+    this.draw= function() {
       this.ctx.fillStyle = 'white';
       this.ctx.fillRect(this.x, this.y, this.width, this.height);
-    },
+    }
 
-    update: function() {
+    this.update= function() {
       if (this.direccion == "arriba") {
         this.y = this.y - this.vy;
       } else if (this.direccion == "abajo") {
         this.y = this.y + this.vy;
       }
-    },
+    }
   }
 
-    raqueta.init(ctx);
-    raqueta.draw();
+  var j1 = new raqueta(40,40)
+
+  var j2 = new raqueta(canvas.width-40,40)
+
+    j1.init(ctx);
+    j1.draw();
+    j2.init(ctx);
+    j2.draw();
 
     var timer = null;
+
+    var timer2 = null;
 
     var finish = false;
 
@@ -61,17 +69,29 @@ function main() {
         timer = setInterval(() => {
         window.onkeydown = (e) => {
           e.preventDefault();
-          if (e.key == "s") {
-            raqueta.direccion = "abajo";
-          } else if (e.key == "w") {
-            raqueta.direccion = "arriba";
-          } else if (e.key == "Enter") {
-            finish = true;
+          if (e.key == "s" || e.key == "w") {
+            if (e.key == "s") {
+              j1.direccion = "abajo";
+            } else if (e.key == "w") {
+              j1.direccion = "arriba";
+            } else {
+              finish = true;
+            }
+          }else if (e.key == "ArrowUp" || e.key == "ArrowDown"){
+            if (e.key == "ArrowDown") {
+              j2.direccion = "abajo";
+            } else if (e.key == "ArrowUp") {
+              j2.direccion = "arriba";
+            } else {
+              finish = true;
+            }
           }
-        }
-        raqueta.update();
-        ctx.clearRect(0,0,canvas.width, canvas.height);
-        raqueta.draw();
+          }
+          j1.update();
+          j2.update();
+          ctx.clearRect(0,0,canvas.width, canvas.height);
+          j1.draw();
+          j2.draw();
         },15);
     }
   }
