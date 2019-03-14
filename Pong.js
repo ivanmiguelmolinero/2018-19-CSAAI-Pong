@@ -3,6 +3,7 @@ function main () {
   console.log(window.innerHeight);
   var i = 0;
 
+  var audiopelota = document.getElementById("audiopelota")
   var canvas = document.getElementById("display");
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -29,6 +30,7 @@ function main () {
   ctx.fillText("0",3*canvas.width/4, 40)
 */
   var hitjugador1 = false;
+  var hitjugador2 = false;
 
   var bola = {
 
@@ -170,12 +172,21 @@ function main () {
     }
   }
 
-  function hit(x,y,a,b) {
-    for (var i = b; i < b + jugador1.height; i++) {
+  function hit1(x,y,a,b) {
+    for (var i = b; i <= b + jugador1.height; i++) {
         if (x == a + jugador1.width && (y == i || y+1 == i || y+2 == i || y+3 == i || y+4 == i || y+5 == i)){
           hitjugador1 = true;
-          console.log(hitjugador1);
-        }
+        } /*else if (x == jugador2.x && (y == jugador2.y || y+1 == jugador2.y || y+2 == jugador2.y || y+3 == jugador2.y || y+4 == jugador2.y || y+5 == jugador2.y)){
+          hitjugador2 = true;
+        }*/
+      }
+  }
+  function hit2 (x,y,a,b){
+    for (var j = b; j < b + jugador2.height; j++) {
+      if (x == a && (y == j || y+1 == j || y+2 == j || y+3 == j || y+4 == j || y+5 == j)){
+        hitjugador2 = true;
+        console.log(hitjugador2);
+      }
     }
   }
 
@@ -205,11 +216,21 @@ function main () {
              jugador1.direccion = "arriba";
            } else if (e.key == "s" && jugador1.y + jugador1.height < canvas.height ) {
              jugador1.direccion = "abajo";
+           } else if (jugador1.y < jugador1.y_ini || jugador1.y + jugador1.height > canvas.height) {
+             jugador1.direccion = "ninguna";
+           } else if (e.key == 'ArrowUp' && jugador2.y > jugador2.y_ini) {
+             jugador2.direccion = "arriba";
+           } else if (e.key == "ArrowDown" && jugador2.y + jugador2.height < canvas.height ) {
+             jugador2.direccion = "abajo";
+           } else if (jugador2.y < jugador2.y_ini || jugador2.y + jugador2.height > canvas.height) {
+             jugador2.direccion = "ninguna";
            }
         }
         window.onkeyup = (e) => {
           if (e.key == 'w' || e.key == 's') {
             jugador1.direccion = "ninguna";
+          } else if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
+            jugador2.direccion = "ninguna";
           }
         }
 
@@ -226,7 +247,8 @@ function main () {
           jugador2.draw();
 
           //Comprobacion de si la bola choca con la raqueta
-          hit(bola.x,bola.y,jugador1.x,jugador1.y)
+          hit1(bola.x,bola.y,jugador1.x,jugador1.y)
+          hit2(bola.x,bola.y,jugador2.x,jugador2.y)
 
           // Choque y rebote de la bola
           if (bola.x > canvas.width) {
@@ -274,7 +296,13 @@ function main () {
             bola.direccion = "derecha";
             // Vuelvo a poner el choque en false para poder comprobarlo en cada interaccion
             hitjugador1 = false;
+            audiopelota.play();
             console.log(hitjugador1)
+          } else if (hitjugador2) {
+            bola.vx = -7;
+            bola.direccion = "izquierda";
+            hitjugador2 = false;
+            audiopelota.play();
           }
 
         }, 15)
