@@ -1,7 +1,7 @@
 function main () {
   console.log("main: pong")
   console.log(window.innerHeight);
-  var i = 0;
+  var e = 0;
 
   var audiopelota = document.getElementById("audiopelota")
   var canvas = document.getElementById("display");
@@ -10,25 +10,24 @@ function main () {
 
   var ctx = canvas.getContext("2d");
 
-/*
+
   ctx.fillStyle = 'white';
-  ctx.fillRect(60,60, 10, 40);
+/*  ctx.fillRect(60,60, 10, 40);
   ctx.fillRect(550,300, 10, 40);
 
   ctx.fillRect(3*canvas.width/4, 3*canvas.height/4, 5, 5)
-
-  while (i < canvas.height){
-
-    ctx.fillRect(300, i, 2, 8);
-    i = i + 15;
-  }
-
-  ctx.font = "50px Times New Roman"
-  ctx.fillText("15",canvas.width/4, 40)
-
-  ctx.font = "50px Comic Sans"
-  ctx.fillText("0",3*canvas.width/4, 40)
 */
+
+function midline () {
+  while (e < canvas.height){
+
+    ctx.fillRect(canvas.width/2, e, 2, 8);
+    e = e + 15;
+  }
+  e = 0;
+}
+
+
   var hitjugador1 = false;
   var hitjugador2 = false;
 
@@ -40,8 +39,8 @@ function main () {
     x : 0,
     y: 0,
 
-    vx : 7,
-    vy : 7,
+    vx : 4,
+    vy : 4,
 
     ctx : null,
 
@@ -146,6 +145,8 @@ function main () {
 
     this.direccion= null;
 
+    this.puntuacion = 0;
+
     this.reset= function () {
       this.x = this.x_ini;
       this.y = this.y_ini;
@@ -171,24 +172,37 @@ function main () {
       }
     }
   }
-
   function hit1(x,y,a,b) {
     for (var i = b; i <= b + jugador1.height; i++) {
         if (x == a + jugador1.width && (y == i || y+1 == i || y+2 == i || y+3 == i || y+4 == i || y+5 == i)){
           hitjugador1 = true;
-        } /*else if (x == jugador2.x && (y == jugador2.y || y+1 == jugador2.y || y+2 == jugador2.y || y+3 == jugador2.y || y+4 == jugador2.y || y+5 == jugador2.y)){
+        }
+      }
+  }
+  function hit2(x,y,a,b) {
+    for (var i = b; i <= b + jugador2.height; i++) {
+        if (x == a && (y == i || y+1 == i || y+2 == i || y+3 == i || y+4 == i || y+5 == i)){
           hitjugador2 = true;
-        }*/
+        }
       }
   }
-  function hit2 (x,y,a,b){
-    for (var j = b; j < b + jugador2.height; j++) {
-      if (x == a && (y == j || y+1 == j || y+2 == j || y+3 == j || y+4 == j || y+5 == j)){
-        hitjugador2 = true;
-        console.log(hitjugador2);
-      }
-    }
+  function resetmatch (){
+    clearInterval(timer);
+    timer = null;
+    bola.init(ctx);
+    jugador1.init(ctx);
+    jugador2.init(ctx);
+    ctx.clearRect(0,0,canvas.width, canvas.height);
+    jugador1.draw();
+    jugador2.draw();
+    midline();
+    ctx.font = "40px Impact"
+    ctx.fillText(jugador1.puntuacion,canvas.width/4, 40);
+    ctx.font = "40px impact"
+    ctx.fillText(jugador2.puntuacion,3*canvas.width/4, 40);
   }
+
+
 
   var jugador1 = new raqueta(40,40);
   var jugador2 = new raqueta(canvas.width-40,40);
@@ -198,13 +212,23 @@ function main () {
   jugador2.init(ctx);
   jugador2.draw();
 
+  //Dibujar la linea separadora del medio
+  midline();
+
+  ctx.font = "40px Impact"
+  ctx.fillText(jugador1.puntuacion,canvas.width/4, 40);
+
+  ctx.font = "40px impact"
+  ctx.fillText(jugador2.puntuacion,3*canvas.width/4, 40);
+
   var timer = null;
+  jugar();
+function jugar() {
   window.onkeydown = (e) => {
     e.preventDefault();
 
-    if (e.key == 'Enter'){
+    if (e.key == 'Enter' && !timer){
       // Lanzar el timer (si es que no estaba ya lanzado)
-      if (!timer) {
         timer = setInterval(() =>{
           // Actualizar la bola
            bola.update()
@@ -236,6 +260,7 @@ function main () {
 
           jugador1.update();
           jugador2.update();
+          midline();
           // Borrar el canvas
           ctx.clearRect(0,0,canvas.width, canvas.height);
 
@@ -246,69 +271,84 @@ function main () {
           jugador1.draw();
           jugador2.draw();
 
+          //Dibujar la linea separadora del medio
+          midline();
+
           //Comprobacion de si la bola choca con la raqueta
           hit1(bola.x,bola.y,jugador1.x,jugador1.y)
-          hit2(bola.x,bola.y,jugador2.x,jugador2.y)
+          if (!hitjugador1){
+            hit2(bola.x,bola.y,jugador2.x,jugador2.y)
+          }
 
           // Choque y rebote de la bola
           if (bola.x > canvas.width) {
-            bola.vx = -7;
-            bola.direccion = "izquierda";
+            jugador1.puntuacion = jugador1.puntuacion + 1;
+            resetmatch();
+            bola.vx = 4;
+            bola.vy = 4;
+            bola.direccion = "derecha";
+            bola.draw();
+            jugar();
           } else if (bola.y < 0 && bola.x < 0) {
-            bola.vx = 7;
-            bola.vy= 15;
+            bola.vx = 4;
+            bola.vy= 8;
             bola.direccion = "derecha";
           } else if (bola.x > canvas.width && bola.y > canvas.height) {
-            bola.vx = -15;
-            bola.vy = -7;
+            bola.vx = -8;
+            bola.vy = -4;
             bola.direccion = "izquierda";
           } else if (bola.x < 0 && bola.y > canvas.height) {
-            bola.vx = 15;
-            bola.vy = -7;
+            bola.vx = 8;
+            bola.vy = -4;
             bola.direccion = "derecha";
           } else if (bola.x > canvas.width && bola.y < 0) {
-            bola.vx = -7;
-            bola.vy = 15;
+            bola.vx = -4;
+            bola.vy = 8;
             bola.direccion = "izquierda";
           } else if (bola.y > canvas.height) {
             // Controlo la direccion de rebote de la bola
             if (bola.direccion == "izquierda") {
-              bola.vx = -7;
-              bola.vy = -7;
+              bola.vx = -4;
+              bola.vy = -4;
             } else {
-              bola.vx = 7;
-              bola.vy = -7;
+              bola.vx = 4;
+              bola.vy = -4;
             }
           } else if (bola.y < 0) {
             // Controlo la direccion de rebote de la bola
             if (bola.direccion == "izquierda") {
-              bola.vx = -7;
-              bola.vy = 7;
+              bola.vx = -4;
+              bola.vy = 4;
             } else {
-              bola.vx = 7;
-              bola.vy = 7;
+              bola.vx = 4;
+              bola.vy = 4;
             }
           } else if (bola.x < 0) {
-            bola.vx = 7;
-            bola.direccion = "derecha";
+            jugador2.puntuacion = jugador2.puntuacion + 1;
+            resetmatch();
+            bola.vx = -4;
+            bola.vy = 4;
+            bola.x = canvas.width - 45;
+            bola.direccion = "izquierda";
+            bola.draw();
+            jugar();
           } else if (hitjugador1) {
-            bola.vx = 7;
+            bola.vx = 4;
             bola.direccion = "derecha";
             // Vuelvo a poner el choque en false para poder comprobarlo en cada interaccion
             hitjugador1 = false;
             audiopelota.play();
-            console.log(hitjugador1)
           } else if (hitjugador2) {
-            bola.vx = -7;
+            bola.vx = -4;
             bola.direccion = "izquierda";
             hitjugador2 = false;
             audiopelota.play();
           }
 
         }, 15)
-      }
     }
   }
+}
 
 
 }
