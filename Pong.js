@@ -69,11 +69,7 @@ function midline () {
       this.x = this.x + this.vx;
       this.y = this.y + this.vy;
     },
-
   }
-
-  bola.init(ctx);
-  bola.draw();
 
   /*var raqueta = {
 
@@ -128,7 +124,7 @@ function midline () {
 
  }*/
 
-  function raqueta (x,y) {
+  function raqueta (x,y,s) {
 
     this.x_ini= x;
     this.y_ini= y;
@@ -146,6 +142,8 @@ function midline () {
     this.direccion= null;
 
     this.puntuacion = 0;
+
+    this.service = s;
 
     this.reset= function () {
       this.x = this.x_ini;
@@ -190,6 +188,11 @@ function midline () {
     clearInterval(timer);
     timer = null;
     bola.init(ctx);
+    if (jugador2.service == true){
+      console.log("paso");
+      bola.x = canvas.width - 45;
+      bola.direccion = "izquierda";
+    }
     jugador1.init(ctx);
     jugador2.init(ctx);
     ctx.clearRect(0,0,canvas.width, canvas.height);
@@ -204,13 +207,15 @@ function midline () {
 
 
 
-  var jugador1 = new raqueta(40,40);
-  var jugador2 = new raqueta(canvas.width-40,40);
+  var jugador1 = new raqueta(40,40,true);
+  var jugador2 = new raqueta(canvas.width-40,40,false);
 
   jugador1.init(ctx);
   jugador1.draw();
   jugador2.init(ctx);
   jugador2.draw();
+  bola.init(ctx);
+  bola.draw();
 
   //Dibujar la linea separadora del medio
   midline();
@@ -224,6 +229,8 @@ function midline () {
   var timer = null;
   jugar();
 function jugar() {
+  console.log(jugador1.service)
+  console.log(jugador2.service)
   window.onkeydown = (e) => {
     e.preventDefault();
 
@@ -236,17 +243,17 @@ function jugar() {
          // Movimiento de una raqueta
          window.onkeydown = (e) => {
            e.preventDefault();
-           if (e.key == 'w' && jugador1.y > jugador1.y_ini) {
+           if (e.key == 'w' && jugador1.y >= jugador1.y_ini) {
              jugador1.direccion = "arriba";
-           } else if (e.key == "s" && jugador1.y + jugador1.height < canvas.height ) {
+           } else if (e.key == "s" && jugador1.y + jugador1.height <= canvas.height ) {
              jugador1.direccion = "abajo";
-           } else if (jugador1.y < jugador1.y_ini || jugador1.y + jugador1.height > canvas.height) {
+           } else if (jugador1.y < jugador1.y_ini || jugador1.y + jugador1.height >= canvas.height) {
              jugador1.direccion = "ninguna";
-           } else if (e.key == 'ArrowUp' && jugador2.y > jugador2.y_ini) {
+           } else if (e.key == 'ArrowUp' && jugador2.y >= jugador2.y_ini) {
              jugador2.direccion = "arriba";
-           } else if (e.key == "ArrowDown" && jugador2.y + jugador2.height < canvas.height ) {
+           } else if (e.key == "ArrowDown" && jugador2.y + jugador2.height <= canvas.height ) {
              jugador2.direccion = "abajo";
-           } else if (jugador2.y < jugador2.y_ini || jugador2.y + jugador2.height > canvas.height) {
+           } else if (jugador2.y < jugador2.y_ini || jugador2.y + jugador2.height >= canvas.height) {
              jugador2.direccion = "ninguna";
            }
         }
@@ -283,10 +290,11 @@ function jugar() {
           // Choque y rebote de la bola
           if (bola.x > canvas.width) {
             jugador1.puntuacion = jugador1.puntuacion + 1;
+            jugador1.service = true;
+            jugador2.service = false;
             resetmatch();
             bola.vx = 4;
             bola.vy = 4;
-            bola.direccion = "derecha";
             bola.draw();
             jugar();
           } else if (bola.y < 0 && bola.x < 0) {
@@ -325,11 +333,11 @@ function jugar() {
             }
           } else if (bola.x < 0) {
             jugador2.puntuacion = jugador2.puntuacion + 1;
+            jugador1.service = false;
+            jugador2.service = true;
             resetmatch();
             bola.vx = -4;
             bola.vy = 4;
-            bola.x = canvas.width - 45;
-            bola.direccion = "izquierda";
             bola.draw();
             jugar();
           } else if (hitjugador1) {
