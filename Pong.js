@@ -287,6 +287,7 @@ function jugar() {
             bola.vx = -4;
             bola.vy = 4;
             bola.x = canvas.width - 45;
+            bola.direccion = "izquierda"
             bola.draw();
             jugar();
           } else if (bola.y < 0 && bola.x < 0) {
