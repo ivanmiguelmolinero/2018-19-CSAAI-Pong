@@ -124,7 +124,7 @@ function midline () {
 
  }*/
 
-  function raqueta (x,y,s) {
+  function raqueta (x,y) {
 
     this.x_ini= x;
     this.y_ini= y;
@@ -142,8 +142,6 @@ function midline () {
     this.direccion= null;
 
     this.puntuacion = 0;
-
-    this.service = s;
 
     this.reset= function () {
       this.x = this.x_ini;
@@ -188,11 +186,6 @@ function midline () {
     clearInterval(timer);
     timer = null;
     bola.init(ctx);
-    if (jugador2.service == true){
-      console.log("paso");
-      bola.x = canvas.width - 45;
-      bola.direccion = "izquierda";
-    }
     jugador1.init(ctx);
     jugador2.init(ctx);
     ctx.clearRect(0,0,canvas.width, canvas.height);
@@ -207,8 +200,8 @@ function midline () {
 
 
 
-  var jugador1 = new raqueta(40,40,true);
-  var jugador2 = new raqueta(canvas.width-40,40,false);
+  var jugador1 = new raqueta(40,40);
+  var jugador2 = new raqueta(canvas.width-40,40);
 
   jugador1.init(ctx);
   jugador1.draw();
@@ -290,11 +283,10 @@ function jugar() {
           // Choque y rebote de la bola
           if (bola.x > canvas.width) {
             jugador1.puntuacion = jugador1.puntuacion + 1;
-            jugador1.service = true;
-            jugador2.service = false;
             resetmatch();
-            bola.vx = 4;
+            bola.vx = -4;
             bola.vy = 4;
+            bola.x = canvas.width - 45;
             bola.draw();
             jugar();
           } else if (bola.y < 0 && bola.x < 0) {
@@ -333,10 +325,9 @@ function jugar() {
             }
           } else if (bola.x < 0) {
             jugador2.puntuacion = jugador2.puntuacion + 1;
-            jugador1.service = false;
-            jugador2.service = true;
+            bola.x_ini = 50;
             resetmatch();
-            bola.vx = -4;
+            bola.vx = 4;
             bola.vy = 4;
             bola.draw();
             jugar();
