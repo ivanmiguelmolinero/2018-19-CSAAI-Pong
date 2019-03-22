@@ -6,7 +6,7 @@ function main () {
   var audiopelota = document.getElementById("audiopelota")
   var canvas = document.getElementById("display");
   canvas.width = window.innerWidth - 25;
-  canvas.height = window.innerHeight - 210;
+  canvas.height = window.innerHeight - 230;
 
   var ctx = canvas.getContext("2d");
 
