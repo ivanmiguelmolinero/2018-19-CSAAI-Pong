@@ -4,6 +4,7 @@ function main () {
   var e = 0;
 
   var audiopelota = document.getElementById("audiopelota")
+  var saque = document.getElementById("saque")
   var canvas = document.getElementById("display");
   canvas.width = window.innerWidth - 25;
   canvas.height = window.innerHeight - 230;
@@ -12,11 +13,8 @@ function main () {
 
 
   ctx.fillStyle = 'white';
-/*  ctx.fillRect(60,60, 10, 40);
-  ctx.fillRect(550,300, 10, 40);
-  ctx.fillRect(3*canvas.width/4, 3*canvas.height/4, 5, 5)
-*/
 
+//Función que dibuja la línea central
 function midline () {
   while (e < canvas.height){
 
@@ -26,10 +24,10 @@ function midline () {
   e = 0;
 }
 
-
+// Variables booleanas que serán usadas para comprobar si la bola choca con alguna de las raquetas
   var hitjugador1 = false;
   var hitjugador2 = false;
-
+//Objeto bola
   var bola = {
 
     x_ini : 50,
@@ -70,6 +68,7 @@ function midline () {
     },
   }
 
+//Funcion constructora de las raquetas
   function raqueta (x,y) {
 
     this.x_ini= x;
@@ -114,6 +113,8 @@ function midline () {
       }
     }
   }
+
+  //Funciones que comprueban el choque de las raquetas
   function hit1(x,y,a,b) {
     for (var i = b; i <= b + jugador1.height; i++) {
         if ((x <= a + jugador1.width && x >= a) && (y == i || y+1 == i || y+2 == i || y+3 == i || y+4 == i || y+5 == i)){
@@ -173,6 +174,7 @@ function jugar() {
     e.preventDefault();
 
     if (e.key == 'Enter' && !timer){
+      saque.play();
       // Lanzar el timer (si es que no estaba ya lanzado)
         timer = setInterval(() =>{
           // Actualizar la bola
