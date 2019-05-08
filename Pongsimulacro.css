@@ -1,0 +1,15 @@
+#display {
+  background-color: black;
+}
+.Titulo {
+  text-align: center;
+  color: yellow;
+}
+
+body {
+  background-image: url(wallpaper.jpg);
+}
+P {
+  color: white;
+  text-align: center;
+}
